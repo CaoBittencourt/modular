@@ -1,3 +1,22 @@
+# directory depth helper function
+dir.depth <- function(path) {
+  ifelse(
+    path[[1]] == ".",
+    getwd(),
+    path[[1]]
+  ) -> path
+
+  strsplit(path, "/")[[1]] |>
+    setdiff("") |>
+    length() -> forward
+
+  strsplit(path, "..")[[1]] |>
+    setdiff("") |>
+    length() -> back
+
+  return(forward - back)
+}
+
 #' @export
 project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.name = "project.root", create.root = T, set.root = T, recursive = T) {
   # assert args
@@ -10,8 +29,7 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
 
   stopifnot(
     "'end.path' must be higher up in the file tree than 'start.path'." = all(
-      length(strsplit(ifelse(start.path == ".", getwd(), start.path), "/")[[1]]) >=
-        length(strsplit(ifelse(end.path == ".", getwd(), end.path), "/")[[1]])
+      dir.depth(start.path[[1]]) >= dir.depth(end.path[[1]])
     )
   )
 
@@ -40,9 +58,6 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
   create.root <- create.root[[1]]
   set.root <- set.root[[1]]
 
-  # inclusive search end path
-  end.path |> file.path("..") -> end.path
-
   # backup current working directory
   wd <- getwd()
 
@@ -54,11 +69,22 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
     recursive = recursive
   ) -> root.file
 
+  # truncate search at system root directory
+  end.path |>
+    dir.depth() |>
+    max(1) -> end.depth
+
   # if no project root file is found, look up the file tree
-  while (all(!length(root.file), getwd() != end.path)) {
+  while (all(!length(root.file), getwd() |> dir.depth() >= end.depth)) {
     getwd() |>
       file.path("..") |>
       setwd()
+
+    paste0(
+      "Searching for '", root.name, "' in ",
+      getwd()
+    ) |>
+      message()
 
     list.files(
       path = getwd(),
@@ -92,7 +118,7 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
     setwd(wd)
   }
 
-  # print and return the path to the project root
+  # message and return the path to the project root
   "Project root:" |>
     paste(
       ifelse(
@@ -101,7 +127,7 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
         dirname(root.file)
       )
     ) |>
-    print()
+    message()
 
   return(root.file)
 }
