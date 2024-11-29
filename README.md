@@ -6,7 +6,7 @@ Therefore, if one calls the `project.root` function from any file whatsover, `mo
 
 To install `modular`, run
 ```
-devtolls::install_github('CaoBittencourt/modular')
+devtools::install_github('CaoBittencourt/modular')
 ```
 
 To set an objective project root, run
