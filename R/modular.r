@@ -75,7 +75,7 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
     max(1) -> end.depth
 
   # if no project root file is found, look up the file tree
-  while (all(!length(root.file), getwd() |> dir.depth() >= end.depth)) {
+  while (all(!length(root.file), getwd() |> dir.depth() > end.depth)) {
     getwd() |>
       file.path("..") |>
       setwd()
