@@ -64,7 +64,7 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
   # look for a project root file
   list.files(
     path = start.path,
-    pattern = root.name,
+    pattern = paste0("^", root.name, "$"),
     full.names = T,
     recursive = recursive
   ) -> root.file
@@ -88,7 +88,7 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
 
     list.files(
       path = getwd(),
-      pattern = root.name,
+      pattern = paste0("^", root.name, "$"),
       full.names = T,
       recursive = recursive
     ) -> root.file
