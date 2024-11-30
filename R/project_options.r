@@ -4,13 +4,12 @@ project.options <- function(project.name = "project", relative.paths = list(), .
 
   # if project options are already set, load project options
   project.name |>
-    paste0(".rda") ->
+    paste0(".rds") ->
   proj.options
 
   if (file.exists(proj.options)) {
     message("Loading project options.")
-    load(proj.options)
-    options(proj.options)
+    options(readRDS(proj.options))
     return()
   }
 
@@ -33,6 +32,8 @@ project.options <- function(project.name = "project", relative.paths = list(), .
     paste0(".root") ->
   proj.root
 
+  # save options in the project root
+  message("Saving project options.")
   getwd() |>
     setNames(proj.root) |>
     c(
@@ -41,13 +42,19 @@ project.options <- function(project.name = "project", relative.paths = list(), .
           file.path(getwd(), x)
         })
     ) |>
-    options() ->
-  proj.options
-
-  # save options in the project root
-  message("Saving project options.")
-  save(proj.options, file = paste0(project.name, ".rda"))
+    saveRDS(
+      file = paste0(
+        project.name,
+        ".rds"
+      )
+    )
 
   # reset working directory
   setwd(wd)
+
+  # load project options
+  if (file.exists(proj.options)) {
+    message("Loading project options.")
+    options(readRDS(proj.options))
+  }
 }

@@ -1,7 +1,7 @@
 Package: modular
 Type: Package
 Title: Modules in R with objective project roots and file tree lookup
-Version: 1.3.0
+Version: 1.4.0
 Author: Cao Bittencourt
 Maintainer: Cao Bittencourt <caobittencourt@gmail.com>
 Description: modular helps to write modular code in R. It is meant to be used with packages such as box or regular source commands by providing an absolute path to a project's root which is objetive and consistent across files and working directories. Therefore, if one calls the project.root function from any file whatsover, modular will either find a local project root or create one. Unless specified, it will then set the working directory to the project root. Thus, all paths can be objectively referenced from it.
