@@ -1,24 +1,5 @@
-# directory depth helper function
-dir.depth <- function(path) {
-  ifelse(
-    path[[1]] == ".",
-    getwd(),
-    path[[1]]
-  ) -> path
-
-  strsplit(path, "/")[[1]] |>
-    setdiff("") |>
-    length() -> forward
-
-  strsplit(path, "..")[[1]] |>
-    setdiff("") |>
-    length() -> back
-
-  return(forward - back)
-}
-
 #' @export
-project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.name = "project.root", create.root = T, set.root = T, recursive = T) {
+project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.name = "project.root", create.root = T, recursive = T) {
   # assert args
   stopifnot(
     "'start.path' and 'end.path' must be valid paths." = all(
@@ -45,18 +26,10 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
     )
   )
 
-  stopifnot(
-    "'set.root' must be either TRUE or FALSE." = all(
-      is.logical(set.root),
-      !is.na(set.root)
-    )
-  )
-
   root.name <- root.name[[1]]
   start.path <- start.path[[1]]
   end.path <- end.path[[1]]
   create.root <- create.root[[1]]
-  set.root <- set.root[[1]]
 
   # backup current working directory
   wd <- getwd()
@@ -108,15 +81,8 @@ project.root <- function(start.path = ".", end.path = Sys.getenv("HOME"), root.n
       which.max()
   ]] -> root.file
 
-  # if set.root, set working directory to project root
-  # else, reset working directory
-  if (set.root) {
-    root.file |>
-      dirname() |>
-      setwd()
-  } else {
-    setwd(wd)
-  }
+  # reset working directory
+  setwd(wd)
 
   # message and return the path to the project root
   "Project root:" |>
